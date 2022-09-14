@@ -41,14 +41,31 @@ class RRT:
         return self.q_new
 
     def create_obstacle(self, center, radius):
+        """Create a circular obstacle"""
         circle = plt.Circle(center, radius, color='black', fill=True)
         return circle
     
-    # def check_vertex_in_circle(self, vertex, circle):
+    def check_vertex_in_circle(self, vertex, circle):
+        """Check if the vertex lies inside or on the circle"""
+        distance = math.dist(circle[0], vertex)
+        if distance <= circle[1]:
+            return True
+        return False
 
+    def find_perp_distance(self, point1, point2, point3):
+        perp_distance = abs((point3[0] - point2[0]) * (point2[1] - point1[1]) - (point2[0] - point1[0]) * (point3[1] - point2[1])) / math.sqrt((point3[0] - point2[0]) ** 2 + (point3[1] - point2[1]) ** 2)
+        return perp_distance
+
+    # def check_path_collision(self):
+    #     """Check if the path from q_near to q_new intersects with a circle"""
+        
     
-    # def check_collision(self):
-
+    def check_collision(self, vertex):
+        """Check if there is any collision"""
+        for circle in self.circles:
+            if self.check_vertex_in_circle(vertex, circle):
+                return True
+        return False
 
     # def check_collision_free_path(self):
 
