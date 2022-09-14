@@ -91,6 +91,9 @@ class RRT:
         f, ax = plt.subplots()
         ax.set_xlim(0, 100)
         ax.set_ylim(0, 100)
+        self.generate_random_goal()
+        ax.plot(self.q_init[0], self.q_init[1], '*', color='blue')
+        ax.plot(self.q_goal[0], self.q_goal[1], '*', color='blue')
         center1 = (20, 45)
         center2 = (75, 25)
         center3 = (50, 65)
@@ -106,13 +109,13 @@ class RRT:
         ax.add_artist(obstacle1)
         ax.add_artist(obstacle2)
         ax.add_artist(obstacle3)
-        for iteration in range(self.iterations):
-            q_near = self.find_nearest_vertex()
-            q_new = self.generate_new_config()
-            self.q_list.append(q_new)
-            x = [q_near[0], q_new[0]]
-            y = [q_near[1], q_new[1]]
-            ax.plot(x, y, color='blue')
+        # for iteration in range(self.iterations):
+        #     q_near = self.find_nearest_vertex()
+        #     q_new = self.generate_new_config()
+        #     self.q_list.append(q_new)
+        #     x = [q_near[0], q_new[0]]
+        #     y = [q_near[1], q_new[1]]
+        #     ax.plot(x, y, color='blue')
         plt.show()
     
 def main():
