@@ -12,6 +12,7 @@ class RRT:
         self.domain = 100
         self.q_list = [q_init]
         self.circles = []
+        self.q_goal = []
     
     def generate_random_config(self):
         """Generate a random position in the 100x100 domain"""
@@ -53,21 +54,37 @@ class RRT:
         return False
 
     def find_perp_distance(self, point1, point2, point3):
+        """Calculate the perpendicular distance"""
         perp_distance = abs((point3[0] - point2[0]) * (point2[1] - point1[1]) - (point2[0] - point1[0]) * (point3[1] - point2[1])) / math.sqrt((point3[0] - point2[0]) ** 2 + (point3[1] - point2[1]) ** 2)
         return perp_distance
 
-    # def check_path_collision(self):
-    #     """Check if the path from q_near to q_new intersects with a circle"""
-        
+    def check_path_collision(self, circle):
+        """Check if the path from q_near to q_new intersects with a circle"""
+        distance = self.find_perp_distance(circle[0], self.q_near, self.q_new)
+        if distance <= circle[1]:
+            return True
+        else:
+            return False
     
     def check_collision(self, vertex):
         """Check if there is any collision"""
         for circle in self.circles:
-            if self.check_vertex_in_circle(vertex, circle):
+            if self.check_vertex_in_circle(vertex, circle) or self.check_path_collision(circle):
                 return True
         return False
 
-    # def check_collision_free_path(self):
+    def check_collision_free_path(self, vertex):
+        """Check for a collision free path"""
+        for circle in self.circles:
+            if not self.check_vertex_in_circle(vertex, circle) or self.check_path_collision(circle):
+                return True
+        return False
+
+    def generate_random_goal(self):
+        self.q_goal = [self.domain * np.random.rand(), self.domain * np.random.rand()]
+        for circle in self.circles:
+            while self.check_vertex_in_circle(self.q_goal, circle):
+                self.q_goal = [self.domain * np.random.rand(), self.domain * np.random.rand()]
 
     def plot_result(self):
         """Plot the tree"""
