@@ -57,7 +57,7 @@ class RRT:
         return perp_distance
 
     def check_path_collision(self, circle, q1, q2):
-        """Check if the path from q_near to q_new intersects with a circle"""
+        """Check if the path from a vertex to another vertex intersects with a circle"""
         distance = self.find_perp_distance(circle[0], q1, q2)
         if distance <= circle[1]:
             return True
@@ -67,14 +67,14 @@ class RRT:
     def check_collision(self, vertex):
         """Check if there is any collision"""
         for circle in self.circles:
-            if self.check_vertex_in_circle(vertex, circle) or self.check_path_collision(circle, self.q_near, self.q_new):
+            if self.check_vertex_in_circle(vertex, circle) or self.check_path_collision(circle, self.q_near, vertex):
                 return True
         return False
 
     def check_collision_free_path(self, vertex):
-        """Check for a collision free path"""
+        """Check for a collision free path from a new vertex to the goal"""
         for circle in self.circles:
-            if not self.check_vertex_in_circle(vertex, circle) or self.check_path_collision(circle):
+            if not self.check_vertex_in_circle(vertex, circle) or self.check_path_collision(circle, vertex, self.q_goal):
                 return True
         return False
 
@@ -116,9 +116,10 @@ class RRT:
                 x = [self.q_near[0], self.q_new[0]]
                 y = [self.q_near[1], self.q_new[1]]
                 ax.plot(x, y, color='blue')
-        # x = [self.q_new[0], self.q_goal[0]]
-        # y = [self.q_new[1], self.q_goal[1]]
-        # ax.plot(x, y, color='blue')
+        if self.check_collision_free_path(self.q_new):
+            x = [self.q_new[0], self.q_goal[0]]
+            y = [self.q_new[1], self.q_goal[1]]
+            ax.plot(x, y, color='blue')
         plt.show()
     
 def main():
