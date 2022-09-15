@@ -12,7 +12,6 @@ class RRT:
         self.domain = 100
         self.q_list = [q_init]
         self.circles = []
-        self.q_goal = []
     
     def generate_random_config(self):
         """Generate a random position in the 100x100 domain"""
@@ -22,9 +21,8 @@ class RRT:
     def find_nearest_vertex(self):
         """Find the nearest vertex from a random position in q_list"""
         dist_list = []
-        random_vertex = self.generate_random_config()
         for vertex in self.q_list:
-            distance = math.dist(vertex, random_vertex)
+            distance = math.dist(vertex, self.q_rand)
             dist_list.append(distance)
         nearest_dist = min(dist_list)
         nearest_index = dist_list.index(nearest_dist)
@@ -58,9 +56,9 @@ class RRT:
         perp_distance = abs((point3[0] - point2[0]) * (point2[1] - point1[1]) - (point2[0] - point1[0]) * (point3[1] - point2[1])) / math.sqrt((point3[0] - point2[0]) ** 2 + (point3[1] - point2[1]) ** 2)
         return perp_distance
 
-    def check_path_collision(self, circle):
+    def check_path_collision(self, circle, q1, q2):
         """Check if the path from q_near to q_new intersects with a circle"""
-        distance = self.find_perp_distance(circle[0], self.q_near, self.q_new)
+        distance = self.find_perp_distance(circle[0], q1, q2)
         if distance <= circle[1]:
             return True
         else:
@@ -69,7 +67,7 @@ class RRT:
     def check_collision(self, vertex):
         """Check if there is any collision"""
         for circle in self.circles:
-            if self.check_vertex_in_circle(vertex, circle) or self.check_path_collision(circle):
+            if self.check_vertex_in_circle(vertex, circle) or self.check_path_collision(circle, self.q_near, self.q_new):
                 return True
         return False
 
@@ -96,7 +94,7 @@ class RRT:
         ax.plot(self.q_goal[0], self.q_goal[1], '*', color='blue')
         center1 = (20, 45)
         center2 = (75, 25)
-        center3 = (50, 65)
+        center3 = (70, 65)
         radius1 = 10
         radius2 = 5
         radius3 = 15
@@ -109,13 +107,18 @@ class RRT:
         ax.add_artist(obstacle1)
         ax.add_artist(obstacle2)
         ax.add_artist(obstacle3)
-        # for iteration in range(self.iterations):
-        #     q_near = self.find_nearest_vertex()
-        #     q_new = self.generate_new_config()
-        #     self.q_list.append(q_new)
-        #     x = [q_near[0], q_new[0]]
-        #     y = [q_near[1], q_new[1]]
-        #     ax.plot(x, y, color='blue')
+        for iteration in range(self.iterations):
+            self.q_rand = self.generate_random_config()
+            self.q_near = self.find_nearest_vertex()
+            self.q_new = self.generate_new_config()
+            if not self.check_collision(self.q_new):
+                self.q_list.append(self.q_new)
+                x = [self.q_near[0], self.q_new[0]]
+                y = [self.q_near[1], self.q_new[1]]
+                ax.plot(x, y, color='blue')
+        # x = [self.q_new[0], self.q_goal[0]]
+        # y = [self.q_new[1], self.q_goal[1]]
+        # ax.plot(x, y, color='blue')
         plt.show()
     
 def main():
