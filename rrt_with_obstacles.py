@@ -5,16 +5,15 @@ import math
 class RRT:
     """Implementing the Rapidly-Exploring Random Tree algorithm"""
 
-    def __init__(self, num_of_obstacles):
+    def __init__(self, iterations, num_of_obstacles):
         self.q_init = []
-        # self.iterations = iterations
+        self.q_goal = []
+        self.iterations = iterations
         self.delta = 1
         self.domain = 100
         self.q_list = []
         self.circles = []
         self.num_of_obstacles = num_of_obstacles
-        self.q_new = None
-        self.q_prev = [[None, None]]
     
     def generate_random_config(self):
         """Generate a random position in the 100x100 domain"""
@@ -124,42 +123,30 @@ class RRT:
         self.create_random_obstacle()
         self.q_init = self.generate_random_start()
         self.q_list.append(self.q_init)
-        self.q_new = self.q_init
         self.q_goal = self.generate_random_goal()
-        ax.plot(self.q_init[0], self.q_init[1], 'x', color='blue')
+        ax.plot(self.q_init[0], self.q_init[1], '.', color='blue')
         ax.plot(self.q_goal[0], self.q_goal[1], 'x', color='blue')
         for circle in self.circles:
             circle = plt.Circle(circle[0], circle[1], color='black', fill=True)
             ax.add_artist(circle)
-        while not self.check_collision_free_path():
+        for iteration in range(self.iterations):
             self.q_rand = self.generate_random_config()
             self.q_near = self.find_nearest_vertex()
             self.q_new = self.generate_new_config()
             if not self.check_collision(self.q_new):
                 self.q_list.append(self.q_new)
-                self.q_prev.append(self.q_near)
                 x1 = [self.q_near[0], self.q_new[0]]
                 y1 = [self.q_near[1], self.q_new[1]]
                 ax.plot(x1, y1, color='blue')
-        x2 = [self.q_new[0], self.q_goal[0]]
-        y2 = [self.q_new[1], self.q_goal[1]]
-        ax.plot(x2, y2, color='blue')
-        self.q_list.append(self.q_goal)
-        self.q_prev.append(self.q_new)
-        i = 1
-        prev = self.q_prev[-1]
-        now = self.q_list[-1]
-        while prev != [None, None]:
-            x3 = [now[0], prev[0]]
-            y3 = [now[1], prev[1]]
-            ax.plot(x3, y3, color='red')
-            prev_index = self.q_list.index(now)
-            now = prev
-            prev = self.q_prev[prev_index]
+                if self.check_collision_free_path():
+                    x2 = [self.q_new[0], self.q_goal[0]]
+                    y2 = [self.q_new[1], self.q_goal[1]]
+                    ax.plot(x2, y2, color='blue')
+                    break
         plt.show()
     
 def main():
-    rrt = RRT(20)
+    rrt = RRT(2000, 20)
     rrt.plot_result()
 
 if __name__ == "__main__":
