@@ -90,15 +90,13 @@ class RRT:
         for circle in self.circles:
             while self.check_vertex_in_circle(self.q_goal, circle):
                 self.q_goal = [self.domain * np.random.rand(), self.domain * np.random.rand()]
+        return self.q_goal
 
     def plot_result(self):
         """Plot the tree"""
         f, ax = plt.subplots()
         ax.set_xlim(0, 100)
         ax.set_ylim(0, 100)
-        self.generate_random_goal()
-        ax.plot(self.q_init[0], self.q_init[1], 'x', color='blue')
-        ax.plot(self.q_goal[0], self.q_goal[1], 'x', color='blue')
         center1 = (20, 45)
         center2 = (75, 25)
         center3 = (70, 65)
@@ -108,6 +106,9 @@ class RRT:
         self.circles.append([center1, radius1])
         self.circles.append([center2, radius2])
         self.circles.append([center3, radius3])
+        self.q_goal = self.generate_random_goal()
+        ax.plot(self.q_init[0], self.q_init[1], 'x', color='blue')
+        ax.plot(self.q_goal[0], self.q_goal[1], 'x', color='blue')
         obstacle1 = self.create_random_obstacle(center1, radius1)
         obstacle2 = self.create_random_obstacle(center2, radius2)
         obstacle3 = self.create_random_obstacle(center3, radius3)
@@ -127,7 +128,6 @@ class RRT:
                 x = [self.q_near[0], self.q_new[0]]
                 y = [self.q_near[1], self.q_new[1]]
                 ax.plot(x, y, color='blue')
-        self.q_list.append(self.q_goal)
         x = [self.q_new[0], self.q_goal[0]]
         y = [self.q_new[1], self.q_goal[1]]
         ax.plot(x, y, color='blue')
