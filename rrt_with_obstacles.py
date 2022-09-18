@@ -5,15 +5,15 @@ import math
 class RRT:
     """Implementing the Rapidly-Exploring Random Tree algorithm"""
 
-    def __init__(self, q_init):
-        self.q_init = q_init
+    def __init__(self, num_of_obstacles):
+        self.q_init = []
         # self.iterations = iterations
         self.delta = 1
         self.domain = 100
-        self.q_list = [q_init]
+        self.q_list = []
         self.circles = []
-        self.num_of_obstacles = 20
-        self.q_new = self.q_init
+        self.num_of_obstacles = num_of_obstacles
+        self.q_new = None
     
     def generate_random_config(self):
         """Generate a random position in the 100x100 domain"""
@@ -44,8 +44,8 @@ class RRT:
     def create_random_obstacle(self): # Original had center and radius as arguments
         """Create a random circular obstacle"""
         while self.num_of_obstacles != 0:
-            center_x = np.random.randint(1, 99)
-            center_y = np.random.randint(1, 99)
+            center_x = np.random.randint(1, 100)
+            center_y = np.random.randint(1, 100)
             center = [center_x, center_y]
             radius = np.random.randint(1, 10)
             self.circles.append([center, radius])
@@ -86,6 +86,13 @@ class RRT:
                 return False
         return True
 
+    def generate_random_start(self):
+        self.q_init = [self.domain * np.random.rand(), self.domain * np.random.rand()]
+        for circle in self.circles:
+            while self.check_vertex_in_circle(self.q_init, circle):
+                self.q_init = [self.domain * np.random.rand(), self.domain * np.random.rand()]
+        return self.q_init
+    
     def generate_random_goal(self):
         self.q_goal = [self.domain * np.random.rand(), self.domain * np.random.rand()]
         for circle in self.circles:
@@ -114,6 +121,9 @@ class RRT:
         # ax.add_artist(obstacle2)
         # ax.add_artist(obstacle3)
         self.create_random_obstacle()
+        self.q_init = self.generate_random_start()
+        self.q_list.append(self.q_init)
+        self.q_new = self.q_init
         self.q_goal = self.generate_random_goal()
         ax.plot(self.q_init[0], self.q_init[1], 'x', color='blue')
         ax.plot(self.q_goal[0], self.q_goal[1], 'x', color='blue')
@@ -132,10 +142,14 @@ class RRT:
         x2 = [self.q_new[0], self.q_goal[0]]
         y2 = [self.q_new[1], self.q_goal[1]]
         ax.plot(x2, y2, color='blue')
+        self.q_list.append(self.q_goal)
+        # print(self.q_list)
+        # print(self.q_goal)
+        # self.q_list.reverse()
         plt.show()
     
 def main():
-    rrt = RRT([50, 50])
+    rrt = RRT(20)
     rrt.plot_result()
 
 if __name__ == "__main__":
