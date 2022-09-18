@@ -146,13 +146,16 @@ class RRT:
         ax.plot(x2, y2, color='blue')
         self.q_list.append(self.q_goal)
         self.q_prev.append(self.q_new)
-        q_prev = self.q_prev[-1]
-        q_now = self.q_list[-1]
-        while(q_prev != [None, None]):
-            x3 = [q_now[0], q_prev[0]]
-            y3 = [q_now[1], q_prev[1]]
+        i = 1
+        prev = self.q_prev[-1]
+        now = self.q_list[-1]
+        while prev != [None, None]:
+            x3 = [now[0], prev[0]]
+            y3 = [now[1], prev[1]]
             ax.plot(x3, y3, color='red')
-            q_now = q_prev
+            prev_index = self.q_list.index(now)
+            now = prev
+            prev = self.q_prev[prev_index]
         plt.show()
     
 def main():
