@@ -14,6 +14,7 @@ class RRT:
         self.circles = []
         self.num_of_obstacles = num_of_obstacles
         self.q_new = None
+        self.q_prev = [[None, None]]
     
     def generate_random_config(self):
         """Generate a random position in the 100x100 domain"""
@@ -136,6 +137,7 @@ class RRT:
             self.q_new = self.generate_new_config()
             if not self.check_collision(self.q_new):
                 self.q_list.append(self.q_new)
+                self.q_prev.append(self.q_near)
                 x1 = [self.q_near[0], self.q_new[0]]
                 y1 = [self.q_near[1], self.q_new[1]]
                 ax.plot(x1, y1, color='blue')
@@ -143,9 +145,14 @@ class RRT:
         y2 = [self.q_new[1], self.q_goal[1]]
         ax.plot(x2, y2, color='blue')
         self.q_list.append(self.q_goal)
-        # print(self.q_list)
-        # print(self.q_goal)
-        # self.q_list.reverse()
+        self.q_prev.append(self.q_new)
+        q_prev = self.q_prev[-1]
+        q_now = self.q_list[-1]
+        while(q_prev != [None, None]):
+            x3 = [q_now[0], q_prev[0]]
+            y3 = [q_now[1], q_prev[1]]
+            ax.plot(x3, y3, color='red')
+            q_now = q_prev
         plt.show()
     
 def main():
