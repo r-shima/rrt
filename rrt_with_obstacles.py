@@ -5,14 +5,15 @@ import math
 class RRT:
     """Implementing the Rapidly-Exploring Random Tree algorithm"""
 
-    def __init__(self, q_init, iterations):
+    def __init__(self, q_init):
         self.q_init = q_init
-        self.iterations = iterations
+        # self.iterations = iterations
         self.delta = 1
         self.domain = 100
         self.q_list = [q_init]
         self.circles = []
-        # self.num_of_obstacles = 20
+        self.num_of_obstacles = 20
+        self.q_new = self.q_init
     
     def generate_random_config(self):
         """Generate a random position in the 100x100 domain"""
@@ -40,17 +41,17 @@ class RRT:
         self.q_new = [q_new_x, q_new_y]
         return self.q_new
 
-    def create_random_obstacle(self, center, radius): # Currently not random. Hard-coding the obstacles.
+    def create_random_obstacle(self): # Original had center and radius as arguments
         """Create a random circular obstacle"""
-        # while self.num_of_obstacles != 0:
-        #     center_x = np.random.randint(1, 99)
-        #     center_y = np.random.randint(1, 99)
-        #     center = [center_x, center_y]
-        #     radius = np.random.randint(1, 10)
-        #     self.circles.append([center, radius])
-        #     self.num_of_obstacles -= 1
-        circle = plt.Circle(center, radius, color='black', fill=True)
-        return circle
+        while self.num_of_obstacles != 0:
+            center_x = np.random.randint(1, 99)
+            center_y = np.random.randint(1, 99)
+            center = [center_x, center_y]
+            radius = np.random.randint(1, 10)
+            self.circles.append([center, radius])
+            self.num_of_obstacles -= 1
+        # circle = plt.Circle(center, radius, color='black', fill=True)
+        # return circle
     
     def check_vertex_in_circle(self, vertex, circle):
         """Check if the vertex lies inside or on the circle"""
@@ -81,9 +82,9 @@ class RRT:
     def check_collision_free_path(self):
         """Check for a collision free path from a new vertex to the goal"""
         for circle in self.circles:
-            if not self.check_vertex_in_circle(self.q_new, circle) or self.check_path_collision(circle, self.q_new, self.q_goal):
-                return True
-        return False
+            if self.check_path_collision(circle, self.q_new, self.q_goal):
+                return False
+        return True
 
     def generate_random_goal(self):
         self.q_goal = [self.domain * np.random.rand(), self.domain * np.random.rand()]
@@ -97,44 +98,44 @@ class RRT:
         f, ax = plt.subplots()
         ax.set_xlim(0, 100)
         ax.set_ylim(0, 100)
-        center1 = (20, 45)
-        center2 = (75, 25)
-        center3 = (70, 65)
-        radius1 = 10
-        radius2 = 5
-        radius3 = 15
-        self.circles.append([center1, radius1])
-        self.circles.append([center2, radius2])
-        self.circles.append([center3, radius3])
+        # center1 = (20, 45)
+        # center2 = (75, 25)
+        # center3 = (70, 65)
+        # radius1 = 10
+        # radius2 = 5
+        # radius3 = 15
+        # self.circles.append([center1, radius1])
+        # self.circles.append([center2, radius2])
+        # self.circles.append([center3, radius3])
+        # obstacle1 = self.create_random_obstacle(center1, radius1)
+        # obstacle2 = self.create_random_obstacle(center2, radius2)
+        # obstacle3 = self.create_random_obstacle(center3, radius3)
+        # ax.add_artist(obstacle1)
+        # ax.add_artist(obstacle2)
+        # ax.add_artist(obstacle3)
+        self.create_random_obstacle()
         self.q_goal = self.generate_random_goal()
         ax.plot(self.q_init[0], self.q_init[1], 'x', color='blue')
         ax.plot(self.q_goal[0], self.q_goal[1], 'x', color='blue')
-        obstacle1 = self.create_random_obstacle(center1, radius1)
-        obstacle2 = self.create_random_obstacle(center2, radius2)
-        obstacle3 = self.create_random_obstacle(center3, radius3)
-        ax.add_artist(obstacle1)
-        ax.add_artist(obstacle2)
-        ax.add_artist(obstacle3)
-        # self.create_random_obstacle()
-        # for circle in self.circles:
-        #     circle = plt.Circle(circle[0], circle[1], color='black', fill=True)
-        #     ax.add_artist(circle)
-        for iteration in range(self.iterations):
+        for circle in self.circles:
+            circle = plt.Circle(circle[0], circle[1], color='black', fill=True)
+            ax.add_artist(circle)
+        while not self.check_collision_free_path():
             self.q_rand = self.generate_random_config()
             self.q_near = self.find_nearest_vertex()
             self.q_new = self.generate_new_config()
             if not self.check_collision(self.q_new):
                 self.q_list.append(self.q_new)
-                x = [self.q_near[0], self.q_new[0]]
-                y = [self.q_near[1], self.q_new[1]]
-                ax.plot(x, y, color='blue')
-        x = [self.q_new[0], self.q_goal[0]]
-        y = [self.q_new[1], self.q_goal[1]]
-        ax.plot(x, y, color='blue')
+                x1 = [self.q_near[0], self.q_new[0]]
+                y1 = [self.q_near[1], self.q_new[1]]
+                ax.plot(x1, y1, color='blue')
+        x2 = [self.q_new[0], self.q_goal[0]]
+        y2 = [self.q_new[1], self.q_goal[1]]
+        ax.plot(x2, y2, color='blue')
         plt.show()
     
 def main():
-    rrt = RRT([50, 50], 2000)
+    rrt = RRT([50, 50])
     rrt.plot_result()
 
 if __name__ == "__main__":
