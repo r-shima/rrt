@@ -14,7 +14,7 @@ class RRT:
         self.q_list = []
         self.circles = []
         self.num_of_obstacles = num_of_obstacles
-        self.q_prev_list = []
+        self.q_prev_list = [[]]
     
     def generate_random_config(self):
         """Generate a random position in the 100x100 domain"""
@@ -62,7 +62,7 @@ class RRT:
         return False
 
     def find_u(self, point1, point2, point3):
-        """Calculate the perpendicular distance"""
+        """Calculate u required to check for path collision"""
         x_delta = point3[0] - point2[0]
         y_delta = point3[1] - point2[1]
         u = ((point1[0] - point2[0]) * x_delta + (point1[1] - point2[1]) * y_delta) / (x_delta * x_delta + y_delta * y_delta)
@@ -100,6 +100,7 @@ class RRT:
         return True
 
     def generate_random_start(self):
+        """Generate a random start location"""
         self.q_init = [self.domain * np.random.rand(), self.domain * np.random.rand()]
         for circle in self.circles:
             while self.check_vertex_in_circle(self.q_init, circle):
@@ -107,6 +108,7 @@ class RRT:
         return self.q_init
     
     def generate_random_goal(self):
+        """Generate a random goal location"""
         self.q_goal = [self.domain * np.random.rand(), self.domain * np.random.rand()]
         for circle in self.circles:
             while self.check_vertex_in_circle(self.q_goal, circle):
@@ -159,6 +161,17 @@ class RRT:
                     break
         self.q_list.append(self.q_goal)
         self.q_prev_list.append(self.q_new)
+        current = self.q_list[-1]
+        previous = self.q_prev_list[-1]
+        while True:
+            if previous == []:
+                break
+            x3 = [current[0], previous[0]]
+            y3 = [current[1], previous[1]]
+            ax.plot(x3, y3, color='red')
+            index = self.q_list.index(current)
+            current = previous
+            previous = self.q_prev_list[index]
         plt.show()
     
 def main():
