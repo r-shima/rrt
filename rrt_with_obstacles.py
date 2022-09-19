@@ -169,8 +169,12 @@ class RRT:
             x3 = [current[0], previous[0]]
             y3 = [current[1], previous[1]]
             ax.plot(x3, y3, color='red')
-            index = self.q_list.index(current)
+            # index = self.q_list.index(current)
+            # current = previous
+            # previous = self.q_prev_list[index]
             current = previous
+            if current in self.q_list:
+                index = self.q_list.index(current)
             previous = self.q_prev_list[index]
         plt.show()
     
