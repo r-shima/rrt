@@ -14,6 +14,7 @@ class RRT:
         self.q_list = []
         self.circles = []
         self.num_of_obstacles = num_of_obstacles
+        self.q_prev_list = []
     
     def generate_random_config(self):
         """Generate a random position in the 100x100 domain"""
@@ -41,7 +42,7 @@ class RRT:
         self.q_new = [q_new_x, q_new_y]
         return self.q_new
 
-    def create_random_obstacle(self): # Original had center and radius as arguments
+    def create_random_obstacle(self): # Original had center and radius as parameters
         """Create a random circular obstacle"""
         while self.num_of_obstacles != 0:
             center_x = np.random.randint(1, 100)
@@ -136,7 +137,7 @@ class RRT:
         self.q_init = self.generate_random_start()
         self.q_list.append(self.q_init)
         self.q_goal = self.generate_random_goal()
-        ax.plot(self.q_init[0], self.q_init[1], '.', color='blue')
+        ax.plot(self.q_init[0], self.q_init[1], 'o', color='blue')
         ax.plot(self.q_goal[0], self.q_goal[1], 'x', color='blue')
         for circle in self.circles:
             circle = plt.Circle(circle[0], circle[1], color='black', fill=True)
@@ -147,6 +148,7 @@ class RRT:
             self.q_new = self.generate_new_config()
             if not self.check_collision(self.q_new):
                 self.q_list.append(self.q_new)
+                self.q_prev_list.append(self.q_near)
                 x1 = [self.q_near[0], self.q_new[0]]
                 y1 = [self.q_near[1], self.q_new[1]]
                 ax.plot(x1, y1, color='blue')
@@ -155,6 +157,8 @@ class RRT:
                     y2 = [self.q_new[1], self.q_goal[1]]
                     ax.plot(x2, y2, color='blue')
                     break
+        self.q_list.append(self.q_goal)
+        self.q_prev_list.append(self.q_new)
         plt.show()
     
 def main():
