@@ -42,7 +42,7 @@ class RRT:
         self.q_new = [q_new_x, q_new_y]
         return self.q_new
 
-    def create_random_obstacle(self): # Original had center and radius as parameters
+    def create_random_obstacle(self):
         """Create a random circular obstacle"""
         while self.num_of_obstacles != 0:
             center_x = np.random.randint(1, 100)
@@ -51,8 +51,6 @@ class RRT:
             radius = np.random.randint(1, 10)
             self.circles.append([center, radius])
             self.num_of_obstacles -= 1
-        # circle = plt.Circle(center, radius, color='black', fill=True)
-        # return circle
     
     def check_vertex_in_circle(self, vertex, circle):
         """Check if the vertex lies inside or on the circle"""
@@ -120,21 +118,6 @@ class RRT:
         f, ax = plt.subplots()
         ax.set_xlim(0, 100)
         ax.set_ylim(0, 100)
-        # center1 = (20, 45)
-        # center2 = (75, 25)
-        # center3 = (70, 65)
-        # radius1 = 10
-        # radius2 = 5
-        # radius3 = 15
-        # self.circles.append([center1, radius1])
-        # self.circles.append([center2, radius2])
-        # self.circles.append([center3, radius3])
-        # obstacle1 = self.create_random_obstacle(center1, radius1)
-        # obstacle2 = self.create_random_obstacle(center2, radius2)
-        # obstacle3 = self.create_random_obstacle(center3, radius3)
-        # ax.add_artist(obstacle1)
-        # ax.add_artist(obstacle2)
-        # ax.add_artist(obstacle3)
         self.create_random_obstacle()
         self.q_init = self.generate_random_start()
         self.q_list.append(self.q_init)
@@ -169,9 +152,6 @@ class RRT:
             x3 = [current[0], previous[0]]
             y3 = [current[1], previous[1]]
             ax.plot(x3, y3, color='red')
-            # index = self.q_list.index(current)
-            # current = previous
-            # previous = self.q_prev_list[index]
             current = previous
             if current in self.q_list:
                 index = self.q_list.index(current)
