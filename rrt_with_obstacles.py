@@ -60,14 +60,26 @@ class RRT:
             return True
         return False
 
-    def find_perp_distance(self, point1, point2, point3):
+    def find_u(self, point1, point2, point3):
         """Calculate the perpendicular distance"""
-        perp_distance = abs((point3[0] - point2[0]) * (point2[1] - point1[1]) - (point2[0] - point1[0]) * (point3[1] - point2[1])) / math.sqrt((point3[0] - point2[0]) ** 2 + (point3[1] - point2[1]) ** 2)
-        return perp_distance
+        x_delta = point3[0] - point2[0]
+        y_delta = point3[1] - point2[1]
+        u = ((point1[0] - point2[0]) * x_delta + (point1[1] - point2[1]) * y_delta) / (x_delta * x_delta + y_delta * y_delta)
+        return u
 
-    def check_path_collision(self, circle, q1, q2):
+    def check_path_collision(self, circle, point1, point2):
         """Check if the path from a vertex to another vertex intersects with a circle"""
-        distance = self.find_perp_distance(circle[0], q1, q2)
+        x_delta = point2[0] - point1[0]
+        y_delta = point2[1] - point1[1]
+        u = self.find_u(circle[0], point1, point2)
+        if u < 0:
+            closest_point = point1
+        elif u > 1:
+            closest_point = point2
+        else:
+            closest_point = (point1[0] + u * x_delta, point1[1] + u * y_delta)
+        
+        distance = math.dist(closest_point, circle[0])
         if distance <= circle[1]:
             return True
         return False
@@ -146,7 +158,7 @@ class RRT:
         plt.show()
     
 def main():
-    rrt = RRT(2000, 20)
+    rrt = RRT(2000, 40)
     rrt.plot_result()
 
 if __name__ == "__main__":
