@@ -58,7 +58,7 @@ class RRT:
         plt.pause(5)
     
 def main():
-    rrt = RRT([50, 50], 500)
+    rrt = RRT([50, 50], 800)
     rrt.plot_result()
 
 if __name__ == "__main__":
