@@ -116,14 +116,16 @@ class RRT:
     def plot_result(self):
         """Plot the tree"""
         f, ax = plt.subplots()
+        plt.ion()
         ax.set_xlim(0, 100)
         ax.set_ylim(0, 100)
+        ax.set_title("Rapidly-Exploring Random Tree with Obstacles")
         self.create_random_obstacle()
         self.q_init = self.generate_random_start()
         self.q_list.append(self.q_init)
         self.q_goal = self.generate_random_goal()
-        ax.plot(self.q_init[0], self.q_init[1], 'o', color='blue')
-        ax.plot(self.q_goal[0], self.q_goal[1], 'x', color='blue')
+        ax.plot(self.q_init[0], self.q_init[1], 'o', color='green')
+        ax.plot(self.q_goal[0], self.q_goal[1], 'o', color='orange')
         for circle in self.circles:
             circle = plt.Circle(circle[0], circle[1], color='black', fill=True)
             ax.add_artist(circle)
@@ -137,10 +139,12 @@ class RRT:
                 x1 = [self.q_near[0], self.q_new[0]]
                 y1 = [self.q_near[1], self.q_new[1]]
                 ax.plot(x1, y1, color='blue')
+                plt.pause(0.0001)
                 if self.check_collision_free_path():
                     x2 = [self.q_new[0], self.q_goal[0]]
                     y2 = [self.q_new[1], self.q_goal[1]]
                     ax.plot(x2, y2, color='blue')
+                    plt.pause(0.0001)
                     break
         self.q_list.append(self.q_goal)
         self.q_prev_list.append(self.q_new)
@@ -152,11 +156,13 @@ class RRT:
             x3 = [current[0], previous[0]]
             y3 = [current[1], previous[1]]
             ax.plot(x3, y3, color='red')
+            plt.pause(0.0001)
             current = previous
             if current in self.q_list:
                 index = self.q_list.index(current)
             previous = self.q_prev_list[index]
         plt.show()
+        plt.pause(5)
     
 def main():
     rrt = RRT(2000, 40)

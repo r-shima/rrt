@@ -42,8 +42,10 @@ class RRT:
     def plot_result(self):
         """Plot the tree"""
         f, ax = plt.subplots()
+        plt.ion()
         ax.set_xlim(0, 100)
         ax.set_ylim(0, 100)
+        ax.set_title("Rapidly-Exploring Random Tree with No Obstacles")
         for iteration in range(self.iterations):
             q_near = self.find_nearest_vertex()
             q_new = self.generate_new_config()
@@ -51,10 +53,12 @@ class RRT:
             x = [q_near[0], q_new[0]]
             y = [q_near[1], q_new[1]]
             ax.plot(x, y, color='blue')
+            plt.pause(0.0001)
         plt.show()
+        plt.pause(5)
     
 def main():
-    rrt = RRT([50, 50], 2000)
+    rrt = RRT([50, 50], 500)
     rrt.plot_result()
 
 if __name__ == "__main__":
